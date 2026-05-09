@@ -1,0 +1,53 @@
+const isValidIncrease = (difference) => {
+  return difference >= 1 && difference <= 3;
+};
+
+const isValidDecrease = (difference) => {
+  return difference <= -1 && difference >= -3;
+};
+
+const isSafeReport = (reportLine) => {
+  const levels = reportLine.trim().split(/\s+/).map(Number);
+
+  let difference = levels[1] - levels[0];
+
+  if (difference === 0) {
+    return false;
+  }
+
+  const isIncreasing = difference > 0;
+
+  if (
+    (isIncreasing && !isValidIncrease(difference)) ||
+    (!isIncreasing && !isValidDecrease(difference))
+  ) {
+    return false;
+  }
+
+  for (let index = 2; index < levels.length; index++) {
+    difference = levels[index] - levels[index - 1];
+
+    if (
+      (isIncreasing && !isValidIncrease(difference)) ||
+      (!isIncreasing && !isValidDecrease(difference))
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const countSafeReports = (input) => {
+  const reports = input.trim().split("\n");
+
+  let safeCount = 0;
+
+  for (let index = 0; index < reports.length; index++) {
+    if (isSafeReport(reports[index])) {
+      safeCount++;
+    }
+  }
+
+  return safeCount;
+};
