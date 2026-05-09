@@ -1,0 +1,86 @@
+const isValidIncrease = (difference) => {
+  return difference >= 1 && difference <= 3;
+};
+
+const isValidDecrease = (difference) => {
+  return difference <= -1 && difference >= -3;
+};
+
+const isValidDifference = (difference, isIncreasing) => {
+  return isIncreasing
+    ? isValidIncrease(difference)
+    : isValidDecrease(difference);
+};
+
+const checkWithSkip = (levels, isIncreasing, skipIndex) => {
+  let previous = null;
+
+  for (let index = 0; index < levels.length; index++) {
+    if (index === skipIndex) {
+      continue;
+    }
+
+    if (previous === null) {
+      previous = levels[index];
+      continue;
+    }
+
+    const difference = levels[index] - previous;
+
+    if (!isValidDifference(difference, isIncreasing)) {
+      return false;
+    }
+
+    previous = levels[index];
+  }
+
+  return true;
+};
+
+const checkDirection = (levels, isIncreasing) => {
+  let previous = levels[0];
+
+  for (let index = 1; index < levels.length; index++) {
+    const difference = levels[index] - previous;
+
+    if (isValidDifference(difference, isIncreasing)) {
+      previous = levels[index];
+      continue;
+    }
+    
+    return (
+      checkWithSkip(levels, isIncreasing, index) ||
+      checkWithSkip(levels, isIncreasing, index - 1)
+    );
+  }
+
+  return true;
+};
+
+const isSafeReport = (reportLine) => {
+  const levels = reportLine
+    .trim()
+    .split(/\s+/)
+    .map(Number);
+
+  return (
+    checkDirection(levels, true) ||
+    checkDirection(levels, false)
+  );
+};
+
+const countSafeReports = (input) => {
+  const reports = input
+    .trim()
+    .split("\n");
+
+  let safeCount = 0;
+
+  for (const report of reports) {
+    if (isSafeReport(report)) {
+      safeCount++;
+    }
+  }
+
+  return safeCount;
+};
